@@ -28,7 +28,7 @@ objects:
         spec:
           imagePullSecrets:
             - name: docker-p2p
-          containers:
+          containers:                            
             - env:
                 - name: KUBERNETES_NAMESPACE
                   valueFrom:
@@ -44,6 +44,17 @@ objects:
                       resource: limits.memory
                 - name: TZ
                   value: Europe/London
+              ports:
+              - containerPort: 8080
+                name: http
+              - containerPort: 61616
+                name: ola-amq
+              - containerPort: 61626
+                name: fuse-amq
+              - containerPort: 61636
+                name: pricing-amq
+              - containerPort: 61646
+                name: vrm-amq    
               image: ${IMAGE}
               imagePullPolicy: Always
               name: ${RESOURCE_NAME}
@@ -59,16 +70,10 @@ objects:
               volumeMounts:
                 - mountPath: /opt/app-root/etc/nginx.conf.d
                   name: proxy-conf-volume
-                - mountPath: /opt/app-root/etc/nginx.secrets
-                  name: cpu-tcp-credentials-volume
           volumes:
             - name: proxy-conf-volume
               configMap:
                 name: ${RESOURCE_NAME}
-                defaultMode: 420
-            - name: cpu-tcp-credentials-volume
-              secret:
-                secretName: ${RESOURCE_NAME}
                 defaultMode: 420
           restartPolicy: Always
       triggers:
@@ -90,11 +95,6 @@ parameters:
     displayName: Replicas
     description: Number of replicas to deploy in an environment
     required: true
-  - name: PORT
-    displayName: Port
-    description: Port exposed by the service
-    required: false
-    value: "8080"
   - name: CPU_MIN
     displayName: Minimum CPU
     description: Minimum number of CPU cores for the container to start with.

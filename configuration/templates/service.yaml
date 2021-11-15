@@ -12,12 +12,12 @@ objects:
     spec:
       ports:
         - name: ${NODE_PORT}-${NGINX_PORT}
-          port: ${NGINX_PORT}
+          port: ${{NGINX_PORT}}
           protocol: TCP
-          nodePort: ${NODE_PORT}
-          targetPort: ${NGINX_PORT}
+          nodePort: ${{NODE_PORT}}
+          targetPort: ${{NGINX_PORT}}
       selector:
-        app: ${RESOURCE_NAME}
+        app: ${APP_LABEL}
       type: NodePort
 parameters:
   - name: RESOURCE_NAME
@@ -32,9 +32,9 @@ parameters:
     displayName: Nginx Port
     description: Port exposed by the nginx pod
     required: false
-    value: "8080"
+    value: '8080'
   - name: NODE_PORT
     displayName: NodePort
     description: Port exposed by the NodePort Service
     required: false
-    value: "31000"
+    value: '31000'
