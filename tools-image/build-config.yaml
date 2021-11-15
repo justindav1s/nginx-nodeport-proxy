@@ -21,7 +21,7 @@ objects:
           name: quayio-dockercfg
       strategy:
         dockerStrategy:
-          dockerfilePath: tools-image
+          dockerfilePath: tools-image/DockerFile
       runPolicy: Serial
       resources: {}
       postCommit: {}
