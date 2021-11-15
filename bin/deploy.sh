@@ -30,6 +30,16 @@ oc new-app -f ../configuration/templates/service.yaml \
    -p NODE_PORT=${NODE_PORT} \
    -n $PROJECT   
 
+NGINX_PORT=18778
+NODE_PORT=31871
+oc new-app -f ../configuration/templates/service.yaml \
+   -p RESOURCE_NAME=${APP}-${NODE_PORT} \
+   -p APP_LABEL=${APP} \
+   -p NGINX_PORT=${NGINX_PORT} \
+   -p NODE_PORT=${NODE_PORT} \
+   -n $PROJECT
+
+
 NGINX_PORT=61626
 NODE_PORT=31626
 oc new-app -f ../configuration/templates/service.yaml \
