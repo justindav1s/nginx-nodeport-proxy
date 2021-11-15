@@ -17,7 +17,7 @@ oc create configmap ${APP} --from-file=../configuration/templates/environment-sp
 oc new-app -f ../configuration/templates/deploy-config.yaml \
    -p RESOURCE_NAME=${APP} \
    -p APP_LABEL=${APP} \
-   -p IMAGE="nexus-dev-devops.services.theosmo.com/mo/cpu-tcp-proxy:latest" \
+   -p IMAGE="quay.io/justindav1s/tcp-proxy:latest" \
    -p REPLICAS=1 \
    -n $PROJECT
 
