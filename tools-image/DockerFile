@@ -1,0 +1,7 @@
+FROM registry.access.redhat.com/rhscl/nginx-114-rhel7:1-39
+
+USER root
+
+RUN yum install -y net-tools nmap-ncat
+
+
