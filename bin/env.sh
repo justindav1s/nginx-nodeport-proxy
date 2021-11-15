@@ -1,4 +1,4 @@
 #!/bin/bash
 
-export PROJECT=cpu-tcp-proxy
-export APP=cpu-tcp-proxy
+export PROJECT=tcp-proxy
+export APP=tcp-proxy
