@@ -5,15 +5,22 @@
 
 oc project $PROJECT
 
-oc delete bc cpu-tcp-proxy
+oc delete bc ${APP}
+
+oc create secret docker-registry quayio-dockercfg \
+  --docker-server=${QUAYIO_REGISTRY} \
+  --docker-username=${QUAYIO_USER} \
+  --docker-password=${QUAYIO_PASSWORD} \
+  --docker-email=${QUAYIO_EMAIL} \
+  -n $PROJECT
 
 oc new-app -f ../configuration/templates/build-config.yaml \
-    -p BUILD_NAME=cpu-tcp-proxy \
-    -p APPLICATION_LABEL=cpu-tcp-proxy \
-    -p DOCKER_REGISTRY=nexus-dev-devops.services.theosmo.com \
-    -p DOCKER_REPOSITORY=mo \
-    -p IMAGE_NAME=cpu-tcp-proxy \
+    -p BUILD_NAME=${APP} \
+    -p APPLICATION_LABEL=${APP} \
+    -p DOCKER_REGISTRY=quay.io \
+    -p DOCKER_REPOSITORY=justindav1s \
+    -p IMAGE_NAME=${APP} \
     -p IMAGE_VERSION=latest \
     -n $PROJECT
 
-oc start-build -F cpu-tcp-proxy -n $PROJECT   
+oc start-build -F ${APP} -n $PROJECT   

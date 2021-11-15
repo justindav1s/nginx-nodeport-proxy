@@ -12,16 +12,14 @@ objects:
       source:
         contextDir: build
         git:
-          uri: https://bitbucket.org/motabilityoperations/${IMAGE_NAME}.git
-        sourceSecret:
-          name: bitbucket-ro
+          uri: ${GIT_URL}
         type: Git
       output:
         to:
           kind: DockerImage
           name: ${DOCKER_REGISTRY}/${DOCKER_REPOSITORY}/${IMAGE_NAME}:${IMAGE_VERSION}
         pushSecret:
-          name: docker-p2p
+          name: quayio-dockercfg
       strategy:
         sourceStrategy:
           from:
@@ -57,4 +55,8 @@ parameters:
   - name: IMAGE_VERSION
     displayName: Image Version
     description: Version of specific image to push to external Docker registry.
+    required: true
+  - name: GIT_URL
+    displayName: Git Url
+    description: Git Url
     required: true
