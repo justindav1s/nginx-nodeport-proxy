@@ -1,0 +1,117 @@
+kind: Template
+apiVersion: v1
+objects:
+  - apiVersion: apps.openshift.io/v1
+    kind: DeploymentConfig
+    metadata:
+      annotations:
+        argocd.argoproj.io/sync-wave: "0"
+      labels:
+        app: ${APP_LABEL}
+      name: ${RESOURCE_NAME}
+    spec:
+      replicas: ${{REPLICAS}}
+      selector:
+        app: ${RESOURCE_NAME}
+      strategy:
+        type: Rolling
+        rollingParams:
+          updatePeriodSeconds: 1
+          intervalSeconds: 1
+          timeoutSeconds: 300
+          maxSurge: 1
+          maxUnavailable: 0
+      template:
+        metadata:
+          labels:
+            app: ${RESOURCE_NAME}
+        spec:
+          imagePullSecrets:
+            - name: docker-p2p
+          containers:
+            - env:
+                - name: KUBERNETES_NAMESPACE
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.namespace
+                - name: CONTAINER_CORE_LIMIT
+                  valueFrom:
+                    resourceFieldRef:
+                      resource: limits.cpu
+                - name: CONTAINER_MAX_MEMORY
+                  valueFrom:
+                    resourceFieldRef:
+                      resource: limits.memory
+                - name: TZ
+                  value: Europe/London
+              image: ${IMAGE}
+              imagePullPolicy: Always
+              name: ${RESOURCE_NAME}
+              resources:
+                requests:
+                  cpu: ${CPU_MIN}
+                  memory: ${RAM_MIN}
+                limits:
+                  cpu: ${CPU_MAX}
+                  memory: ${RAM_MAX}
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+              volumeMounts:
+                - mountPath: /opt/app-root/etc/nginx.conf.d
+                  name: proxy-conf-volume
+                - mountPath: /opt/app-root/etc/nginx.secrets
+                  name: cpu-tcp-credentials-volume
+          volumes:
+            - name: proxy-conf-volume
+              configMap:
+                name: ${RESOURCE_NAME}
+                defaultMode: 420
+            - name: cpu-tcp-credentials-volume
+              secret:
+                secretName: ${RESOURCE_NAME}
+                defaultMode: 420
+          restartPolicy: Always
+      triggers:
+        - type: ConfigChange
+parameters:
+  - name: RESOURCE_NAME
+    displayName: Resource Name
+    description: The name of the deployment configuration resource that also matches other resources.
+    required: true
+  - name: APP_LABEL
+    displayName: Application Label
+    description: Name of the application label that should be used in all resources.
+    required: true
+  - name: IMAGE
+    displayName: Image Reference
+    description: Complete reference to an image in external Docker Registry.
+    required: true
+  - name: REPLICAS
+    displayName: Replicas
+    description: Number of replicas to deploy in an environment
+    required: true
+  - name: PORT
+    displayName: Port
+    description: Port exposed by the service
+    required: false
+    value: "8080"
+  - name: CPU_MIN
+    displayName: Minimum CPU
+    description: Minimum number of CPU cores for the container to start with.
+    value: 250m
+    required: false
+  - name: CPU_MAX
+    displayName: Maximum CPU
+    description: Maximum number of CPU cores for a container to use.
+    value: 500m
+    required: false
+  - name: RAM_MIN
+    displayName: Minimum RAM
+    description: Minimum amount of memory for the container to start with.
+    value: 256Mi
+    required: false
+  - name: RAM_MAX
+    displayName: Maximum RAM
+    description: Maximum amount of memory for a container to use.
+    value: 512Mi
+    required: false

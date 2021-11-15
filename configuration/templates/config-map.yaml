@@ -1,0 +1,24 @@
+kind: Template
+apiVersion: v1
+objects:
+  - kind: ConfigMap
+    apiVersion: v1
+    metadata:
+      name: cpu-tcp-proxy
+    data:
+      location-root.conf: ${PROXY_LOCATION_ROOT}
+      location-scheduler.conf: ${PROXY_LOCATION_SCHEDULER}
+      location-cpu-tcp.conf: ${PROXY_LOCATION_ALFA}
+parameters:
+  - name: PROXY_LOCATION_ROOT
+    displayName: Proxy Location / Configuration file
+    description: A string, in nginx CONF format, with the location / dynamic configuration
+    required: true
+  - name: PROXY_LOCATION_SCHEDULER
+    displayName: Proxy Location Scheduler Configuration file
+    description: A string, in nginx CONF format, with the location /scheduler dynamic configuration
+    required: true
+  - name: PROXY_LOCATION_ALFA
+    displayName: Proxy Location Alfa Configuration file
+    description: A string, in nginx CONF format, with the location /cpu-tcp static configuration
+    required: true

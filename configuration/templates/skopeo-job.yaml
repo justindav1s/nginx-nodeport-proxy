@@ -1,0 +1,60 @@
+kind: Template
+apiVersion: v1
+objects:
+  - kind: Job
+    apiVersion: batch/v1
+    metadata:
+      name: ${RESOURCE_NAME}
+    spec:
+      parallelism: 1
+      completions: 1
+      template:
+        metadata:
+          name: ${RESOURCE_NAME}
+        spec:
+          containers:
+          - name: skopeo-copy
+            image: registry.redhat.io/rhel8/skopeo:8.3-64.1618434196
+            command:
+            - skopeo
+            - copy
+            - "--src-creds=${SOURCE_CREDENTIALS}"
+            - "--dest-creds=${TARGET_CREDENTIALS}"
+            - "docker://${SOURCE_DOCKER_REGISTRY}/${DOCKER_REPOSITORY}/${IMAGE}:${IMAGE_VERSION}"
+            - "docker://${TARGET_DOCKER_REGISTRY}/${DOCKER_REPOSITORY}/${IMAGE}:${IMAGE_VERSION}"
+          restartPolicy: Never
+parameters:
+  - name: RESOURCE_NAME
+    displayName: Resource Name
+    description: The name of the service resource that also matches POD app label.
+    value: skopeo-copy
+    required: false
+  - name: DOCKER_REPOSITORY
+    displayName: Full Docker repository name
+    description: The complete name of the Docker repository to use to store the image.
+    required: false
+    value: mo
+  - name: IMAGE
+    displayName: Image Reference
+    description: Complete reference to an image in external Docker Registry.
+    required: true
+  - name: IMAGE_VERSION
+    displayName: Image Version
+    description: Version of specific image to pull from external Docker registry.
+    required: true
+  - name: SOURCE_DOCKER_REGISTRY
+    displayName: Source Docker Registry
+    description: Prefix with source Docker Registry to use when pulling image.
+    required: true
+  - name: TARGET_DOCKER_REGISTRY
+    displayName: Target Docker Registry
+    description: Prefix with target Docker Registry to use when pushing image.
+    required: true
+  - name: SOURCE_CREDENTIALS
+    displayName: Source Docker Registry Credentials
+    description: Credentials for access to source Docker Registry, in username:password format.
+    required: false
+  - name: TARGET_CREDENTIALS
+    displayName: Target Docker Registry Credentials
+    description: Credentials for access to target Docker Registry, in username:password format.
+    required: false

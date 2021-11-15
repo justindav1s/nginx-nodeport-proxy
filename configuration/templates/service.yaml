@@ -1,0 +1,40 @@
+kind: Template
+apiVersion: v1
+objects:
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        argocd.argoproj.io/sync-wave: "0"
+      labels:
+        app: ${APP_LABEL}
+      name: ${RESOURCE_NAME}
+    spec:
+      ports:
+        - name: ${NODE_PORT}-${NGINX_PORT}
+          port: ${NGINX_PORT}
+          protocol: TCP
+          nodePort: ${NODE_PORT}
+          targetPort: ${NGINX_PORT}
+      selector:
+        app: ${RESOURCE_NAME}
+      type: NodePort
+parameters:
+  - name: RESOURCE_NAME
+    displayName: Resource Name
+    description: The name of the service resource that also matches POD app label.
+    required: true
+  - name: APP_LABEL
+    displayName: Application Label
+    description: Name of the application label that should be used in all resources.
+    required: true
+  - name: NGINX_PORT
+    displayName: Nginx Port
+    description: Port exposed by the nginx pod
+    required: false
+    value: "8080"
+  - name: NODE_PORT
+    displayName: NodePort
+    description: Port exposed by the NodePort Service
+    required: false
+    value: "31000"
